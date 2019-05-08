@@ -12,7 +12,13 @@
     <!-- Add EJS code here -->
   <% include ./partials/_header %>
   <a href=“#”>Create New TinyURL</a>
-  <h3>TinyURL for <%= longURL %> </h3>
-  <p><%= shortURL %></p>
+  <h3>ShortURL: <%= shortURL %> </h3>
+  <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
+    <div class="form-group mb-2">
+      <label for="newLongURL"></label>
+      <input class="form-control" type="text" name="newLongURL" placeholder="<%= longURL %>" style="width: 300px; margin: 0em">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </form>
 </body>
 </html>
