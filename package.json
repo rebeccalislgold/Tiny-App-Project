@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/rebeccalislgold/Tiny-App-Project/issues"
   },
-  "homepage": "https://github.com/rebeccalislgold/Tiny-App-Project#readme"
+  "homepage": "https://github.com/rebeccalislgold/Tiny-App-Project#readme",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "express": "^4.16.4"
+  }
 }
