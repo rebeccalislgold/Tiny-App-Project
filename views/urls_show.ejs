@@ -11,7 +11,7 @@
 <body style="font-size:20px; padding:50px;">
     <!-- Add EJS code here -->
   <% include ./partials/_header %>
-  <a href=“#”>Create New TinyURL</a>
+
   <h3>ShortURL: <%= shortURL %> </h3>
   <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
     <div class="form-group mb-2">
