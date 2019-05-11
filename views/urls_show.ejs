@@ -12,13 +12,17 @@
     <!-- Add EJS code here -->
   <% include ./partials/_header %>
 
-  <h3>ShortURL: <%= shortURL %> </h3>
-  <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
-    <div class="form-group mb-2">
-      <label for="newLongURL"></label>
-      <input class="form-control" type="text" name="newLongURL" placeholder="<%= longURL %>" style="width: 300px; margin: 0em">
-      <button type="submit" class="btn btn-primary">Update</button>
-    </div>
-  </form>
+  <% if (user) { %>
+    <h3>ShortURL: <%= shortURL %> </h3>
+    <form class="form-inline" action="/urls/<%= shortURL %>" method="POST">
+      <div class="form-group mb-2">
+        <label for="newLongURL"></label>
+        <input class="form-control" type="text" name="newLongURL" placeholder="<%= longURL %>" style="width: 300px; margin: 0em">
+        <button type="submit" class="btn btn-primary">Update</button>
+      </div>
+    </form>
+  <% } else { %>
+    <h6>Please register or login to view your URLs. </h6>
+  <% } %>
 </body>
 </html>

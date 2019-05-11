@@ -12,15 +12,21 @@
     <!-- Add EJS code here -->
   <%- include partials/_header.ejs %>
 
-  <h3>My URLs</h3>
-<!--   <form method="POST" action="/urls/b2xVn2/delete">...</form>
-  <form method="POST" action="/urls/9sm5xK/delete">...</form> -->
-  <ul>
-  <% for(let key in urls){ %>
-    <li> <b><%= key %></b> ➡️ <%= urls[key] %>
-      <form method="POST" action="/urls/<%= key %>/delete"><a href="/urls/<%= key %>">Edit </a><button type="submit">Delete 🗑️</button> </form>
-    </li>
+  <% if (user) { %>
+    <h3>My URLs</h3>
+    <!--   <form method="POST" action="/urls/b2xVn2/delete">...</form>
+      <form method="POST" action="/urls/9sm5xK/delete">...</form> -->
+    <ul>
+      <% for(let key in urls){ %>
+        <li> <b><%= key %></b> ➡️ <%= urls[key].longURL %>
+          <form method="POST" action="/urls/<%= key %>/delete"><a href="/urls/<%= key %>">Edit </a><button type="submit">Delete 🗑️</button> </form>
+        </li>
+      <% } %>
+    </ul>
+
+  <% } else { %>
+    <h6>Please register or login to view your URLs. </h6>
   <% } %>
-</ul>
+
 </body>
 </html>

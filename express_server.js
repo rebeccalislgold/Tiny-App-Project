@@ -7,15 +7,63 @@ var cookieParser = require('cookie-parser')
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
 
-var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+
+//OLD URL DB -- TO DELETE
+
+// var urlDatabase = {
+//   "b2xVn2": "http://www.lighthouselabs.ca",
+//   "9sm5xK": "http://www.google.com"
+// };
+
+let addNewURL = function(website, userid) {
+
+  const newID = generateRandomString();
+
+  const newURL = {
+    longURL: website,
+    userID: userid
+  }
+
+  urlDatabase[newID] = newURL;
+
+}
+
+//NEW URL DB
+
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "45965a" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  p6BoGm: { longURL: "https://www.lighthouselabs.ca", userID: "45965a" },
+  h4BoKf: { longURL: "https://www.thebeatles.com", userID: "45965a" }
 };
+
+let filteredUrlDB = function(database, user) {
+
+  var newList = {};
+
+  for (const urlID in database) {
+
+    if (database[urlID].userID === user) {
+
+      newList[urlID] = database[urlID];
+
+    }
+
+  }
+
+  return newList;
+
+}
 
 const users =
   { '45965a':
      { id: '45965a',
        email: 'rebecca.gold@mail.mcgill.ca',
+       password: 'test'
+     },
+    'aJ48lW':
+     { id: 'aJ48lW',
+       email: 'rebecca@mail.ca',
        password: 'test'
      }
   };
@@ -53,49 +101,124 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] };
-  res.render("urls_index", templateVars);
+
+    let templateVars = { urls: filteredUrlDB(urlDatabase,req.cookies["user_id"]) , user: users[req.cookies["user_id"]] };
+    res.render("urls_index", templateVars);
+    res.status(403).send('Please login or register to view your URLs');
+
 });
 
 app.post("/urls", (req, res) => {
-  const newID = generateRandomString();
-  urlDatabase[newID] = req.body.longURL;
+  const newURL = req.body.longURL;
+  const user = req.cookies["user_id"]
+  addNewURL(newURL, user);
   console.log(urlDatabase);
   res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  let urlToDelete = req.params.shortURL
-  let templateVars = {shortURL: urlToDelete}
-  delete urlDatabase[urlToDelete];
-  res.redirect("/urls");
+
+  if (urlDatabase[req.params.shortURL].userID === req.cookies["user_id"]) {
+
+    let urlToDelete = req.params.shortURL
+    let templateVars = {shortURL: urlToDelete}
+    delete urlDatabase[urlToDelete];
+    res.redirect("/urls");
+
+  } else {
+
+    res.status(403).send('Error! This is not your URL.');
+
+  }
+
 });
 
 app.get("/urls/new", (req, res) => {
+
   let templateVars = { user: users[req.cookies["user_id"]] };
-  res.render("urls_new", templateVars);
+
+  if (users[req.cookies["user_id"]]) {
+
+    res.render("urls_new", templateVars);
+
+  } else {
+
+    res.status(403).send('Please login or register to create new tiny URL');
+
+  }
+
 });
+
+
+var isLoggedIn = function(user) {
+
+  if (user) {
+
+    return true;
+
+  // } else {
+
+  //   res.redirect("/urls");
+
+  }
+
+}
 
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], user: users[req.cookies["user_id"]] };
-  res.render("urls_show", templateVars);
+
+  const user = req.cookies["user_id"];
+
+  if (isLoggedIn(user)) {
+
+    if (urlDatabase[req.params.shortURL].userID === req.cookies["user_id"]) {
+
+      let templateVars = { shortURL: req.params.shortURL,
+        longURL: urlDatabase[req.params.shortURL].longURL,
+        user: users[req.cookies["user_id"]]
+        };
+
+      res.render("urls_show", templateVars);
+
+    } else {
+
+    res.status(403).send('Error! Cannot view this URL.')
+
+    }
+
+  } else {
+
+    res.status(403).send('Error! Please register or login.')
+
+  }
+
 });
 
-//FINISH THIS
+
 app.post("/urls/:shortURL", (req, res) => {
+
   // let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   // let newLongURL = req.body
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-  urlDatabase[req.params.shortURL] = req.body.newLongURL;
-  // res.render("urls_show", templateVars);
-  res.redirect("/urls");
+  const shortURL = req.params.shortURL; //grab short URL from url on page
+
+  if(urlDatabase[shortURL].userID === req.cookies["user_id"]) {
+
+    let longURL = req.body.newLongURL; //grab info from form
+    urlDatabase[shortURL].longURL = longURL; //push to DB
+    res.redirect("/urls");
+
+  } else {
+
+    res.status(403).send('Error! This is not your URL.');
+
+  }
 
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL]
+
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
+
 });
 
 app.get("/login", (req, res) => {
