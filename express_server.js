@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 var cookieParser = require('cookie-parser')
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser())
+const bcrypt = require('bcrypt');
 
 
 //OLD URL DB -- TO DELETE
@@ -59,23 +60,28 @@ const users =
   { '45965a':
      { id: '45965a',
        email: 'rebecca.gold@mail.mcgill.ca',
-       password: 'test'
+       hashedPassword: '$2b$10$7zAOPtKq1yqeVsoP/awj7eizgpslpzA/aHC3vl6HJSnGVPOnB1eWG'
      },
     'aJ48lW':
      { id: 'aJ48lW',
        email: 'rebecca@mail.ca',
-       password: 'test'
-     }
+       hashedPassword: '$2b$10$5z0uSAx8/bzM.QSnZ2aVUeqVSBdZoXA9kbZ7/mK9NvKANcodxp1gq'
+     },
+     '7cba2f':
+      { id: '7cba2f',
+      email: 'test@test.com',
+      hashedPassword: '$2b$10$zo/Ndj2.65.BzP3FH8ZB7u73HGfAeguoZhtFrL1XytNcvo0Yf59W6' }
   };
 
 let addNewUser = function(email, password) {
 
+  const hashedPassword = bcrypt.hashSync(password, 10);
   const user_id = generateRandomString()
 
   const newUser = {
     id: user_id,
     email: email,
-    password: password
+    hashedPassword: hashedPassword
   }
 
   users[user_id] = newUser;
@@ -104,7 +110,6 @@ app.get("/urls", (req, res) => {
 
     let templateVars = { urls: filteredUrlDB(urlDatabase,req.cookies["user_id"]) , user: users[req.cookies["user_id"]] };
     res.render("urls_index", templateVars);
-    res.status(403).send('Please login or register to view your URLs');
 
 });
 
@@ -238,7 +243,7 @@ app.post("/login", (req, res) => {
 
     var us_id = findUserID(email);
 
-    if (users[us_id].password === password) {
+    if (bcrypt.compareSync(password, users[us_id].hashedPassword)) {
 
       // Set the cookie to login the user with their user ID
       res.cookie('user_id', us_id);
@@ -327,10 +332,9 @@ app.post("/register", (req, res) => {
 
   } else {
 
-    addNewUser(email, password);
-    console.log(users);
-
     res.cookie('user_id', addNewUser(email, password))
+
+    console.log(users);
 
     res.redirect('/urls');
 
