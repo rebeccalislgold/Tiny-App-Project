@@ -9,13 +9,11 @@
   <title>TinyApp</title>
 </head>
 <body style="font-size:20px; padding:50px;">
-    <!-- Add EJS code here -->
+
   <%- include partials/_header.ejs %>
 
   <% if (user) { %>
     <h3>My URLs</h3>
-    <!--   <form method="POST" action="/urls/b2xVn2/delete">...</form>
-      <form method="POST" action="/urls/9sm5xK/delete">...</form> -->
     <ul>
       <% for(let key in urls){ %>
         <li> <b><%= key %></b> ➡️ <%= urls[key].longURL %>

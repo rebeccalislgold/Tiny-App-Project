@@ -3,9 +3,8 @@
 </header>
 
 <% if (user) { %>
-  <a href=/urls>URLs</a> |
-  <a href=urls/new>Create New TinyURL</a>
   <form action="/logout" method="POST">
+  <a href=/urls>URLs</a> | <a href=/urls/new>Create New TinyURL</a><br>
     <label for="user">Logged in as:</label>
     <input type="text" name="user" placeholder="<%= user.email %>" disabled style="width: 300px; margin: 1em">
     <button type="submit" class="btn btn-primary">Logout</button>
